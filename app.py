@@ -14,7 +14,6 @@ from treefarms import TREEFARMS
 import timbertrek
 
 
-# --- Build TimberTrek HTML manually (no Jupyter display) ---
 def make_html(decision_paths, width):
     # HTML template for TimberTrek widget
     html_top = """<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8" />
@@ -52,11 +51,7 @@ def make_html(decision_paths, width):
 
     # Encode the JS & CSS with base64
     js_base64 = base64.b64encode(js_b).decode("utf-8")
-
-    # Convert dict -> JSON string
     data_json = json.dumps(decision_paths)
-
-    # Pass data into JS via event
     messenger_js = f"""
         (function() {{
             const event = new Event('timbertrekData');
@@ -66,8 +61,6 @@ def make_html(decision_paths, width):
         }}())
     """
     messenger_js_base64 = base64.b64encode(messenger_js.encode()).decode("utf-8")
-
-    # Build final HTML
     html_str = (
         html_top
         + f"<script defer src='data:text/javascript;base64,{js_base64}'></script>"
@@ -77,8 +70,6 @@ def make_html(decision_paths, width):
 
     return html.escape(html_str)
 
-
-# --- Wrapper to return iframe HTML for Streamlit ---
 def visualize_return_html(decision_paths, width=500, height=650):
     assert isinstance(decision_paths, dict), "`decision_paths` has to be a dictionary."
     assert "trie" in decision_paths, "`decision_paths` is not valid (no `trie` key)."
@@ -139,12 +130,12 @@ if uploaded_file:
         "verbose": True
     }
 
-    # Fit Rashomon set
+    # Fit Treefarms model
     st.write("Training TREEFARMS model...")
     model = TREEFARMS(config)
     model.fit(X, y)
 
-    # Extract Rashomon set
+    # just print for verification
     rashomon = model.get_tree_count()
     st.success(f"Rashomon set generated with {rashomon} trees")
 
